@@ -1,0 +1,44 @@
+.TH BUILDER 1 "June 2025" "builder v1.0" "User Commands"
+.SH NAME
+builder \- interactive build script for Termux and FFP platforms
+
+.SH SYNOPSIS
+.B builder.sh
+.RI [ options ]
+
+.SH DESCRIPTION
+builder is a user-friendly interactive shell script that automates the process of configuring, compiling, and installing source packages on Termux (Android) and FFP (ZyXEL NSA320) environments.
+
+.SH OPTIONS
+.TP
+.B --src=SOURCE
+Path to source folder or archive to compile.
+
+.TP
+.B --patch=PATCH
+Path to patch file (can be specified multiple times).
+
+.TP
+.B --configure-options=OPTIONS
+Additional parameters to pass to ./configure script.
+
+.TP
+.B --install-dir=DIR
+Target installation directory. If not specified, defaults to /ffp or Termux prefix.
+
+.TP
+.B --version
+Show script version and author information.
+
+.TP
+.B --help
+Show brief usage help and exit.
+
+.SH AUTHOR
+Jonas Nedvědický (PhateValleyman) <Jonas.Ned@outlook.com>
+
+.SH VERSION
+builder v1.0
+
+.SH SEE ALSO
+colormake(1), gcc(1), patch(1)
