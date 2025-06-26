@@ -109,9 +109,36 @@ fi
 export TEMP="$TEMPDIR"
 export TMPDIR="$TEMPDIR"
 
+# -------- Helper function to ask user for input with default --------
+ask_input() {
+    local prompt="$1"
+    local default="$2"
+    local input
+    if [[ -n "$default" ]]; then
+        read -p "${prompt} [${default}]: " input
+        input="${input:-$default}"
+    else
+        read -p "${prompt}: " input
+    fi
+    echo "$input"
+}
+
 # -------- Ask user for source if not provided --------
 if [[ -z "$SRC_INPUT" ]]; then
-    read -p "Enter path to source archive or folder: " SRC_INPUT
+    SRC_INPUT=$(ask_input "Enter path to source archive or folder" "")
+fi
+
+# -------- Ask user for patch files if none provided --------
+if [[ ${#PATCH_FILES[@]} -eq 0 ]]; then
+    patch_input=$(ask_input "Enter patch file paths (space separated, leave empty if none)" "")
+    if [[ -n "$patch_input" ]]; then
+        read -r -a PATCH_FILES <<< "$patch_input"
+    fi
+fi
+
+# -------- Ask user for additional configure options if none provided --------
+if [[ -z "$CONFIGURE_OPTS" ]]; then
+    CONFIGURE_OPTS=$(ask_input "Enter additional configure options (or leave empty)" "")
 fi
 
 # -------- Unpack archive if necessary --------
@@ -139,7 +166,47 @@ cd "$SRC_DIR" || exit 1
 
 # -------- Apply user patches --------
 for patch in "${PATCH_FILES[@]}"; do
-    echo -e "${CYAN}Applying patch: $patch${RESET}"
+    echo -e "${CYAN}Processing patch: $patch${RESET}"
+
+    # Detect if patch file exists
+    if [[ ! -f "$patch" ]]; then
+        echo -e "${RED}Patch file $patch does not exist!${RESET}"
+        exit 1
+    fi
+
+    # If running on termux and patch contains @TERMUX_PREFIX@, replace with termux prefix
+    if [[ "$DEVICE" == "termux" ]]; then
+        if grep -q "@TERMUX_PREFIX@" "$patch"; then
+            TMP_PATCH="$TEMPDIR/tmp_patch_$$.patch"
+            echo -e "${YELLOW}Replacing @TERMUX_PREFIX@ with $PREFIX in patch${RESET}"
+            sed "s|@TERMUX_PREFIX@|$PREFIX|g" "$patch" > "$TMP_PATCH"
+            patch -p1 < "$TMP_PATCH"
+            rm -f "$TMP_PATCH"
+            if [[ $? -ne 0 ]]; then
+                echo -e "${RED}Patch application failed!${RESET}"
+                exit 1
+            fi
+            continue
+        fi
+    fi
+
+    # If running on ZyXEL (ffp) and patch contains @TERMUX_PREFIX@, replace with /ffp
+    if [[ "$DEVICE" == "ffp" ]]; then
+        if grep -q "@TERMUX_PREFIX@" "$patch"; then
+            TMP_PATCH="$TEMPDIR/tmp_patch_$$.patch"
+            echo -e "${YELLOW}Replacing @TERMUX_PREFIX@ with /ffp in patch${RESET}"
+            sed "s|@TERMUX_PREFIX@|/ffp|g" "$patch" > "$TMP_PATCH"
+            patch -p1 < "$TMP_PATCH"
+            rm -f "$TMP_PATCH"
+            if [[ $? -ne 0 ]]; then
+                echo -e "${RED}Patch application failed!${RESET}"
+                exit 1
+            fi
+            continue
+        fi
+    fi
+
+    # For other cases, apply patch normally
     patch -p1 < "$patch"
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}Patch application failed!${RESET}"
@@ -147,10 +214,20 @@ for patch in "${PATCH_FILES[@]}"; do
     fi
 done
 
+# -------- Colored progress bar for autoreconf --------
+run_autoreconf() {
+    echo -e "${CYAN}Running autoreconf to generate configure script...${RESET}"
+    # Run autoreconf and show a simple colored spinner/progress
+    autoreconf -vfi 2>&1 | while IFS= read -r line; do
+        # Simple progress visualization: print a colored dot per line
+        echo -ne "${GREEN}.${RESET}"
+    done
+    echo -e "\n${GREEN}autoreconf completed.${RESET}"
+}
+
 # -------- Run autoreconf if autoconf files exist --------
 if [[ -f "configure.ac" || -f "configure.in" ]]; then
-    echo -e "${CYAN}Running autoreconf to generate configure script...${RESET}"
-    autoreconf -vfi
+    run_autoreconf
 fi
 
 # -------- Show all configure and compile environment variables --------
