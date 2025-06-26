@@ -1,18 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<title>builder - Interactive Build Tool</title>
-<style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2em; background: #f9f9f9; color: #333; }
-    h1, h2, h3 { color: #2a7ae2; }
-    pre { background: #eee; padding: 1em; overflow-x: auto; }
-    code { font-family: monospace; background: #eee; padding: 0 0.2em; }
-    ul { margin-top: 0; }
-</style>
-</head>
-<body>
-
 <h1>builder - Interactive Build Tool</h1>
 
 <p><code>builder</code> is an interactive shell script designed to streamline the process of building and installing software packages from source. It guides users through each step, from configuring the build environment to applying patches and compiling the software.</p>
@@ -59,9 +44,3 @@
 
 <h2>Example</h2>
 <pre><code>./builder --src=~/Downloads/package.tar.gz --patch=~/patches/fix.patch --configure-options="--enable-feature" --install-dir=/usr/local</code></pre>
-
-<h2>License</h2>
-<p>Distributed under the MIT License.</p>
-
-</body>
-</html>
