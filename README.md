@@ -1,59 +1,67 @@
-# builder v1.0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>builder - Interactive Build Tool</title>
+<style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; margin: 2em; background: #f9f9f9; color: #333; }
+    h1, h2, h3 { color: #2a7ae2; }
+    pre { background: #eee; padding: 1em; overflow-x: auto; }
+    code { font-family: monospace; background: #eee; padding: 0 0.2em; }
+    ul { margin-top: 0; }
+</style>
+</head>
+<body>
 
-**by PhateValleyman (Jonas.Ned@outlook.com)**
+<h1>builder - Interactive Build Tool</h1>
 
-`builder.sh` is an interactive, device-aware build script designed to simplify compiling and installing source packages on Termux (Android) and FFP (ZyXEL NSA320) environments.
+<p><code>builder</code> is an interactive shell script designed to streamline the process of building and installing software packages from source. It guides users through each step, from configuring the build environment to applying patches and compiling the software.</p>
 
-## Features
+<h2>Features</h2>
+<ul>
+<li><strong>Interactive Prompts</strong>: Guides users through the build process with clear prompts.</li>
+<li><strong>Device Detection</strong>: Automatically detects the environment (e.g., Termux, FFP) and adjusts settings accordingly.</li>
+<li><strong>Patch Management</strong>: Applies patches with device-specific adjustments.</li>
+<li><strong>Environment Configuration</strong>: Sets appropriate compiler flags and paths based on the detected environment.</li>
+<li><strong>Progress Indicators</strong>: Displays colored progress bars during the build process.</li>
+<li><strong>Error Handling</strong>: Provides detailed error messages and logs.</li>
+<li><strong>Installation Options</strong>: Offers the choice to install the built software to a specified directory.</li>
+</ul>
 
-- Detects current device and configures toolchain accordingly.
-- Supports source archives and plain directories.
-- Applies user-specified patches.
-- Automatically runs `autoreconf` if necessary.
-- Configures with host/build/prefix based on device.
-- Compiles using `colormake` with full verbosity.
-- Installs to proper device-specific directories.
-- Detects and prints compiled binary and version.
-- Full colored output and error logging with user prompt.
-- CLI and interactive support.
-- Built-in usage and version screens.
+<h2>Installation</h2>
+<ol>
+<li>Clone the repository:
+<pre><code>git clone https://github.com/PhateValleyman/builder.git</code></pre>
+</li>
+<li>Navigate to the directory:
+<pre><code>cd builder</code></pre>
+</li>
+<li>Make the script executable:
+<pre><code>chmod +x builder</code></pre>
+</li>
+<li>Run the script:
+<pre><code>./builder</code></pre>
+</li>
+</ol>
 
-## Usage
+<h2>Usage</h2>
+<pre><code>./builder [--src=SOURCE] [--patch=PATCH] [--configure-options=OPTIONS] [--install-dir=DIR]</code></pre>
 
-```bash
-./builder.sh [--src=SOURCE] [--patch=PATCH] [--configure-options=OPTS] [--install-dir=DIR]
-```
+<h3>Options:</h3>
+<ul>
+<li><code>--src=SOURCE</code>: Path to the source directory or archive.</li>
+<li><code>--patch=PATCH</code>: Path to a patch file to apply. Can be used multiple times.</li>
+<li><code>--configure-options=OPTIONS</code>: Additional options to pass to the <code>./configure</code> script.</li>
+<li><code>--install-dir=DIR</code>: Directory to install the built software. Defaults to <code>/data/data/com.termux/files/usr</code> on Termux or <code>/ffp</code> on FFP.</li>
+<li><code>--version</code>: Display the version of the builder script.</li>
+<li><code>--help</code>: Show this help message.</li>
+</ul>
 
-### Options
+<h2>Example</h2>
+<pre><code>./builder --src=~/Downloads/package.tar.gz --patch=~/patches/fix.patch --configure-options="--enable-feature" --install-dir=/usr/local</code></pre>
 
-- `--src=...`  
-  Source directory or archive to compile. If archive, will be extracted automatically.
-- `--patch=...`  
-  Patch file to apply (can be specified multiple times).
-- `--configure-options=...`  
-  Extra arguments to pass to `./configure`.
-- `--install-dir=...`  
-  Where to install the compiled software (default is device-specific).
-- `--help`  
-  Show usage screen.
-- `--version`  
-  Show version and author info.
+<h2>License</h2>
+<p>Distributed under the MIT License.</p>
 
-## Requirements
-
-- bash
-- patch
-- make
-- colormake
-- GCC/Clang toolchain (per device)
-- unzip/tar for archive extraction
-
-## Example
-
-```bash
-./builder.sh --src=nano-7.2.tar.gz --patch=fix-display.patch --configure-options="--enable-utf8"
-```
-
-## License
-
-MIT
+</body>
+</html>
